@@ -143,6 +143,16 @@ static char __CLOSURE_GET_DATA_BYTES[] = {
 	0x03, 0xA5, 0x0F, 0x00,  // lw    a0, 0(t6)
 	0x67, 0x80, 0x00, 0x00   // ret
 };
+#elif defined(__V_ppc64)
+static char __closure_thunk[] = {
+    0x94, 0x21, 0xff, 0x70, //  stwu 1, -144(1)
+    0x7c, 0x08, 0x02, 0xa6, //  mflr 0
+    0x90, 0x01, 0x00, 0x94  //  stw 0, 148(1)
+};
+static char __CLOSURE_GET_DATA_BYTES[] = {
+    0x80, 0x23, 0x00, 0x94, //  mflr 1
+    0x7c, 0x69, 0x03, 0xa6  //  mtctr 1
+};
 #endif
 
 static void*(*__CLOSURE_GET_DATA)(void) = 0;
@@ -290,6 +300,12 @@ const c_common_macros = '
 	#define __V_x86    1
 	#undef __V_architecture
 	#define __V_architecture 6
+#endif
+
+#if defined(__powerpc64__) || defined(__ppc64__) || defined(_M_POWERPC64)
+	#define __V_ppc64  1
+	#undef __V_architecture
+	#define __V_architecture 7
 #endif
 
 // Using just __GNUC__ for detecting gcc, is not reliable because other compilers define it too:
